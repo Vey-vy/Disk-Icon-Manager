@@ -32,7 +32,7 @@ def remove_file_attributes(path):
 
     set_file_attributes(
         path,
-        0x80
+        0x80  # FILE_ATTRIBUTE_NORMAL
     )
 
 
@@ -47,9 +47,46 @@ def refresh_explorer():
         None
     )
 
-
-def require_admin():
-    if not is_admin():
-        raise PermissionError(
-            "Administrator privileges are required."
+    try:
+        subprocess.run(
+            [
+                "ie4uinit.exe",
+                "-show"
+            ],
+            check=False,
+            creationflags=subprocess.CREATE_NO_WINDOW
         )
+    except Exception:
+        pass
+
+
+def restart_explorer():
+    subprocess.run(
+        [
+            "taskkill",
+            "/f",
+            "/im",
+            "explorer.exe"
+        ],
+        check=False,
+        creationflags=subprocess.CREATE_NO_WINDOW
+    )
+
+    subprocess.Popen(
+        [
+            "explorer.exe"
+        ],
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
+    )
+
+
+def reboot_windows(delay=5):
+    subprocess.Popen(
+        [
+            "shutdown",
+            "/r",
+            "/t",
+            str(delay)
+        ],
+        creationflags=subprocess.CREATE_NO_WINDOW
+    )

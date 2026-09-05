@@ -14,9 +14,7 @@ def get_drives():
     for index in range(26):
         if bitmask & (1 << index):
             letter = chr(ord("A") + index)
-            drive = f"{letter}:\\"
-
-            drives.append(drive)
+            drives.append(f"{letter}:\\")
 
     return drives
 
@@ -26,48 +24,25 @@ def get_drive_usage(drive):
 
 
 def drive_has_custom_icon(drive):
+    autorun = os.path.join(
+        drive,
+        "autorun.inf"
+    )
+
+    icon = os.path.join(
+        drive,
+        "icon.ico"
+    )
+
     desktop_ini = os.path.join(
         drive,
         "desktop.ini"
     )
 
-    drive_icon = os.path.join(
-        drive,
-        "DriveIcon.ico"
-    )
-
     return (
-        os.path.isfile(desktop_ini)
-        and os.path.isfile(drive_icon)
-    )
-
-
-def get_drive_type(drive):
-    DRIVE_UNKNOWN = 0
-    DRIVE_NO_ROOT_DIR = 1
-    DRIVE_REMOVABLE = 2
-    DRIVE_FIXED = 3
-    DRIVE_REMOTE = 4
-    DRIVE_CDROM = 5
-    DRIVE_RAMDISK = 6
-
-    drive_type = kernel32.GetDriveTypeW(
-        drive
-    )
-
-    types = {
-        DRIVE_UNKNOWN: "Unknown",
-        DRIVE_NO_ROOT_DIR: "No root directory",
-        DRIVE_REMOVABLE: "Removable",
-        DRIVE_FIXED: "Fixed",
-        DRIVE_REMOTE: "Network",
-        DRIVE_CDROM: "CD/DVD",
-        DRIVE_RAMDISK: "RAM Disk",
-    }
-
-    return types.get(
-        drive_type,
-        "Unknown"
+        os.path.isfile(autorun)
+        or os.path.isfile(icon)
+        or os.path.isfile(desktop_ini)
     )
 
 
@@ -97,3 +72,33 @@ def is_drive_writable(drive):
             pass
 
         return False
+
+
+def get_drive_type(drive):
+
+    DRIVE_UNKNOWN = 0
+    DRIVE_NO_ROOT_DIR = 1
+    DRIVE_REMOVABLE = 2
+    DRIVE_FIXED = 3
+    DRIVE_REMOTE = 4
+    DRIVE_CDROM = 5
+    DRIVE_RAMDISK = 6
+
+    drive_type = kernel32.GetDriveTypeW(
+        drive
+    )
+
+    types = {
+        DRIVE_UNKNOWN: "Unknown",
+        DRIVE_NO_ROOT_DIR: "No root directory",
+        DRIVE_REMOVABLE: "Removable",
+        DRIVE_FIXED: "Fixed",
+        DRIVE_REMOTE: "Network",
+        DRIVE_CDROM: "CD/DVD",
+        DRIVE_RAMDISK: "RAM Disk",
+    }
+
+    return types.get(
+        drive_type,
+        "Unknown"
+    )
