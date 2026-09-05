@@ -33,6 +33,7 @@ jobs:
             --clean `
             --onefile `
             --windowed `
+            --uac-admin `
             --name "Disk Icon Maker" `
             --icon "assets/app.ico" `
             src/app.py
