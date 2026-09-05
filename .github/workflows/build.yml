@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: windows-latest
@@ -34,8 +37,18 @@ jobs:
             --icon "assets/app.ico" `
             src/app.py
 
-      - name: Upload EXE
-        uses: actions/upload-artifact@v4
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: Disk-Icon-Maker-Windows
-          path: "dist/Disk Icon Maker.exe"
+          tag_name: "v${{ github.run_number }}"
+          name: "Disk Icon Maker v${{ github.run_number }}"
+          body: |
+            ## Disk Icon Maker
+
+            Windows executable built automatically from commit `${{ github.sha }}`.
+
+            ### Download
+            - `Disk Icon Maker.exe`
+          files: "dist/Disk Icon Maker.exe"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
